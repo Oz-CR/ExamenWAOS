@@ -85,11 +85,11 @@ const login = async (req: Request, res: Response) => {
                     expiresIn: '1h'
                 });
                 const updateUser = await User.update({ token: userToken }, { where: { id: user.id } });
-                const SMS = await sendMessage.sendMessage(`Welcome ${user.name}! You have logged in successfully! If it wasn't you, please contact us. 🗣️`, user.phone_number);
-                if (!SMS) {
-                    res.status(500).json({ message: 'Error sending SMS' });
-                    return;
-                }
+                //const SMS = await sendMessage.sendMessage(`Welcome ${user.name}! You have logged in successfully! If it wasn't you, please contact us. 🗣️`, user.phone_number);
+                //if (!SMS) {
+                //    res.status(500).json({ message: 'Error sending SMS' });
+                //    return;
+                //}
                 res.status(200).json({ message: 'Logged in successfully!', userToken });
             }
         } catch (error) {
@@ -99,8 +99,31 @@ const login = async (req: Request, res: Response) => {
     }
 }
 
+const sendCustomMessage = async (req: Request, res: Response) => {
+    const { message_body, user_id } = req.body;
+    try {
+        const user = await User.findOne({ where: { id: user_id } });
+        if (!user) {
+            res.status(400).json({ message: 'User not found' });
+            return;
+        } else {
+            const SMS = await sendMessage.sendMessage(message_body, user.phone_number);
+            if (!SMS) {
+                res.status(500).json({ message: 'Error sending SMS' });
+               return;
+            } else {
+                res.status(200).json({ message: 'Message sent successfully!' });
+            }
+        }
+    } catch (error) {
+        res.status(500).json({ message: 'Error sending message', error });  
+        return;
+    }
+}
+
 export default {
     registerClient,
     registerAdmin,
-    login
+    login,
+    sendCustomMessage
 }

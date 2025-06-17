@@ -5,7 +5,6 @@ import usersRoutes from './presentation/routes/userRoutes';
 import eventsRoutes from './presentation/routes/eventsRouter';
 import ordersRoutes from './presentation/routes/ordersRouter';
 
-
 const app = express();
 
 app.use(cors());
